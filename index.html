@@ -1,0 +1,605 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RacePulse Graphs — Download</title>
+<meta name="description" content="Download the latest version of RacePulse Graphs: lap analysis, strategy, race simulator and live tracking.">
+<meta name="theme-color" content="#070A11">
+<meta name="robots" content="noindex">
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+
+<style>
+  @font-face { font-family: "Albert Sans"; src: url("fonts/AlbertSans-Variable.woff") format("woff"); font-weight: 100 900; font-display: swap; }
+  @font-face { font-family: "Barlow"; src: url("fonts/Barlow-Regular.woff") format("woff"); font-weight: 400; font-display: swap; }
+  @font-face { font-family: "Barlow"; src: url("fonts/Barlow-Medium.woff") format("woff"); font-weight: 500; font-display: swap; }
+  @font-face { font-family: "Barlow"; src: url("fonts/Barlow-SemiBold.woff") format("woff"); font-weight: 600; font-display: swap; }
+  @font-face { font-family: "JetBrains Mono"; src: url("fonts/JetBrainsMono-Regular.woff") format("woff"); font-weight: 400; font-display: swap; }
+
+  /* Tokens taken from the app's AppColors / AppTextStyles. */
+  :root {
+    --bg: #070A11;
+    --surface: #0D1119;
+    --elevated: #131822;
+    --high: #1C222E;
+    --border: #1E242E;
+    --border-strong: #2A313C;
+    --text: #E6EAF0;
+    --text-2: #98A2B3;
+    --text-3: #7A8494;
+    --cyan: #38BDF8;
+    --cyan-deep: #0284C7;
+    --amber: #F5A524;
+    --live: #FF3D57;
+    --display: "Albert Sans", system-ui, sans-serif;
+    --body: "Barlow", system-ui, sans-serif;
+    --mono: "JetBrains Mono", ui-monospace, Menlo, Consolas, monospace;
+    --radius: 14px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { color-scheme: dark; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--body);
+    font-size: 17px;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+    min-height: 100vh;
+    background-image:
+      radial-gradient(ellipse 70% 50% at 20% -10%, rgba(2, 132, 199, .22), transparent 70%),
+      radial-gradient(ellipse 50% 40% at 100% 0%, rgba(56, 189, 248, .08), transparent 70%);
+    background-repeat: no-repeat;
+  }
+
+  .wrap { width: min(1080px, 100% - 32px); margin-inline: auto; }
+
+  /* ---- top bar ---------------------------------------------------------- */
+  header { padding: 22px 0; position: relative; z-index: 2; }
+  header .wrap { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+  .brand { display: flex; align-items: center; gap: 12px; text-decoration: none; color: var(--text); }
+  .brand svg { width: 34px; height: 34px; flex: none; }
+  .brand span { font-family: var(--display); font-weight: 700; font-size: 20px; letter-spacing: -.2px; }
+  .brand span b { color: var(--cyan); font-weight: 700; }
+
+  .lang { display: inline-flex; border: 1px solid var(--border-strong); border-radius: 999px; padding: 3px; background: var(--surface); }
+  .lang button {
+    font: 600 13px/1 var(--body); letter-spacing: .06em;
+    color: var(--text-2); background: none; border: 0; cursor: pointer;
+    padding: 7px 12px; border-radius: 999px;
+  }
+  .lang button[aria-pressed="true"] { background: var(--high); color: var(--text); }
+  .lang button:hover { color: var(--text); }
+
+  :focus-visible { outline: 2px solid var(--cyan); outline-offset: 3px; border-radius: 6px; }
+
+  /* ---- hero ------------------------------------------------------------- */
+  .hero { position: relative; padding: 56px 0 40px; overflow: hidden; }
+  .hero .track { position: absolute; right: -220px; top: -10px; width: 820px; opacity: .9; pointer-events: none; z-index: 0; }
+  .hero .track path { fill: none; stroke-linecap: round; stroke-linejoin: round; }
+  .hero .track .road { stroke: var(--border-strong); stroke-width: 10; opacity: .55; }
+  .hero .track .line { stroke: var(--border); stroke-width: 1.5; stroke-dasharray: 3 9; }
+  .hero .track .comet { stroke: var(--cyan); stroke-width: 5; stroke-dasharray: 5 95; stroke-dashoffset: 0; filter: drop-shadow(0 0 6px rgba(56, 189, 248, .8)); }
+  @media (prefers-reduced-motion: no-preference) {
+    .hero .track .comet { animation: lap 9s linear infinite; }
+  }
+  @media (prefers-reduced-motion: reduce) { .hero .track .comet { display: none; } }
+  @keyframes lap { to { stroke-dashoffset: -100; } }
+
+  .hero .wrap { position: relative; z-index: 1; }
+  .eyebrow {
+    display: inline-flex; align-items: center; gap: 10px;
+    font: 600 13px/1 var(--body); letter-spacing: .22em; text-transform: uppercase; color: var(--cyan);
+    margin-bottom: 22px;
+  }
+  .dot { width: 9px; height: 9px; border-radius: 50%; background: var(--live); }
+  @media (prefers-reduced-motion: no-preference) {
+    .dot { animation: pulse 1.6s infinite; }
+  }
+  @keyframes pulse {
+    0%   { box-shadow: 0 0 0 0 rgba(255, 61, 87, .65); }
+    70%  { box-shadow: 0 0 0 12px rgba(255, 61, 87, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(255, 61, 87, 0); }
+  }
+
+  h1 {
+    font-family: var(--display); font-weight: 750; font-variation-settings: "wght" 750;
+    font-size: clamp(38px, 6.4vw, 68px); line-height: 1.02; letter-spacing: -.03em;
+    max-width: 14ch;
+  }
+  h1 em {
+    font-style: normal;
+    background: linear-gradient(90deg, var(--cyan) 0%, #7dd3fc 100%);
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+  .lede { margin-top: 22px; max-width: 54ch; color: var(--text-2); font-size: 19px; }
+
+  .chips { margin-top: 26px; display: flex; flex-wrap: wrap; gap: 8px; list-style: none; }
+  .chips li {
+    font-size: 14px; font-weight: 500; color: var(--text-2);
+    border: 1px solid var(--border-strong); background: rgba(13, 17, 25, .7);
+    padding: 6px 13px; border-radius: 999px;
+  }
+
+  /* ---- downloads -------------------------------------------------------- */
+  .section-title {
+    font: 600 13px/1 var(--body); letter-spacing: .2em; text-transform: uppercase;
+    color: var(--text-3); margin: 8px 0 16px;
+  }
+  .downloads { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+  .tile {
+    position: relative;
+    background: linear-gradient(180deg, #111722, #0B0F17);
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius);
+    padding: 26px 26px 24px;
+    display: flex; flex-direction: column; gap: 6px;
+  }
+  .tile.recommended { border-color: var(--cyan-deep); box-shadow: 0 0 0 1px rgba(2, 132, 199, .5), 0 18px 50px -20px rgba(56, 189, 248, .35); }
+  .tile .tag {
+    position: absolute; top: 18px; right: 18px;
+    font: 600 11px/1 var(--body); letter-spacing: .12em; text-transform: uppercase;
+    color: var(--cyan); background: rgba(56, 189, 248, .1); border: 1px solid rgba(56, 189, 248, .35);
+    padding: 5px 9px; border-radius: 999px;
+  }
+  .tile .os { display: flex; align-items: center; gap: 12px; }
+  .tile .os svg { width: 26px; height: 26px; color: var(--text); flex: none; }
+  .tile h2 { font-family: var(--display); font-weight: 650; font-variation-settings: "wght" 650; font-size: 22px; letter-spacing: -.01em; }
+  .tile .req { color: var(--text-3); font-size: 15px; }
+  .tile .req:empty { display: none; }
+  .tile .btn { margin-top: 18px; }
+  .meta { margin-top: 12px; font-family: var(--mono); font-size: 13px; color: var(--text-3); display: flex; flex-wrap: wrap; gap: 4px 14px; }
+  .meta:empty { display: none; }
+
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: 10px;
+    font: 600 16px/1 var(--body); letter-spacing: .01em;
+    color: #04121c; background: var(--cyan); text-decoration: none;
+    padding: 15px 22px; border-radius: 10px; border: 0; cursor: pointer;
+    transition: background .15s, transform .15s;
+  }
+  .btn:hover { background: #7dd3fc; }
+  .btn:active { transform: translateY(1px); }
+  .btn svg { width: 18px; height: 18px; }
+  .btn[aria-disabled="true"] { background: var(--high); color: var(--text-3); cursor: default; pointer-events: none; }
+
+  .tile.soon { background: var(--surface); border-style: dashed; }
+  .tile.soon h2, .tile.soon .os svg { color: var(--text-2); }
+  .tile.soon p { color: var(--text-3); font-size: 15px; margin-top: 18px; }
+
+  #status { min-height: 22px; margin-top: 14px; font-size: 14px; color: var(--text-3); }
+  #status.warn { color: var(--amber); }
+
+  /* ---- install steps ---------------------------------------------------- */
+  section.install { padding: 56px 0 8px; }
+  .steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; list-style: none; counter-reset: s; }
+  .steps li {
+    counter-increment: s;
+    background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
+    padding: 24px 24px 22px;
+  }
+  .steps li::before {
+    content: counter(s);
+    display: grid; place-items: center; width: 34px; height: 34px; border-radius: 50%;
+    font: 700 16px/1 var(--display); color: var(--cyan);
+    border: 1px solid rgba(56, 189, 248, .45); background: rgba(56, 189, 248, .08);
+    margin-bottom: 16px;
+  }
+  .steps h3 { font-family: var(--display); font-weight: 650; font-variation-settings: "wght" 650; font-size: 18px; margin-bottom: 6px; }
+  .steps p { color: var(--text-2); font-size: 16px; }
+  .steps code { font-family: var(--mono); font-size: 14px; color: var(--text); background: var(--high); padding: 2px 7px; border-radius: 6px; white-space: nowrap; }
+
+  .note {
+    margin-top: 16px; display: flex; gap: 14px; align-items: flex-start;
+    border: 1px solid rgba(245, 165, 36, .35); background: rgba(245, 165, 36, .06);
+    border-radius: var(--radius); padding: 16px 20px; color: var(--text-2); font-size: 16px;
+  }
+  .note svg { width: 22px; height: 22px; color: var(--amber); flex: none; margin-top: 2px; }
+  .note strong { color: var(--text); font-weight: 600; }
+
+  [hidden] { display: none !important; }
+
+  /* ---- integrity -------------------------------------------------------- */
+  details { margin-top: 28px; border-top: 1px solid var(--border); padding-top: 18px; }
+  summary { cursor: pointer; color: var(--text-2); font-weight: 500; font-size: 16px; list-style: none; display: inline-flex; align-items: center; gap: 8px; }
+  summary::-webkit-details-marker { display: none; }
+  summary::before { content: "→"; color: var(--cyan); transition: transform .15s; }
+  details[open] summary::before { transform: rotate(90deg); }
+  summary:hover { color: var(--text); }
+  details .body { margin-top: 14px; color: var(--text-2); font-size: 15px; display: grid; gap: 10px; }
+  .hash {
+    display: flex; gap: 10px; align-items: stretch;
+  }
+  .hash code {
+    flex: 1; min-width: 0; overflow-wrap: anywhere;
+    font-family: var(--mono); font-size: 13px; color: var(--text);
+    background: var(--surface); border: 1px solid var(--border-strong); border-radius: 8px; padding: 10px 12px;
+  }
+  .hash button {
+    font: 600 14px/1 var(--body); color: var(--text); background: var(--high); border: 1px solid var(--border-strong);
+    border-radius: 8px; padding: 0 16px; cursor: pointer;
+  }
+  .hash button:hover { background: var(--border-strong); }
+
+  /* ---- footer ----------------------------------------------------------- */
+  footer { margin-top: 64px; border-top: 1px solid var(--border); padding: 28px 0 44px; color: var(--text-3); font-size: 15px; }
+  footer .wrap { display: flex; flex-wrap: wrap; gap: 8px 32px; justify-content: space-between; }
+  footer a { color: var(--text-2); text-underline-offset: 3px; }
+  footer a:hover { color: var(--cyan); }
+  footer p.auto { flex-basis: 100%; color: var(--text-2); }
+
+  /* ---- small screens ---------------------------------------------------- */
+  /* Below ~1100px the circuit would run under the headline: push it right and
+     down so it frames the hero instead of striking through the title. */
+  @media (max-width: 1100px) {
+    .hero .track { right: -300px; top: 150px; width: 760px; opacity: .55; }
+  }
+  @media (max-width: 760px) {
+    body { font-size: 16px; }
+    .downloads, .steps { grid-template-columns: 1fr; }
+    .hero { padding-top: 32px; }
+    .hero .track { opacity: .35; right: -330px; top: 260px; width: 700px; }
+    .lede { font-size: 17px; }
+    .tile .tag { position: static; align-self: flex-start; margin-bottom: 8px; }
+    .hash { flex-direction: column; }
+    .hash button { padding: 12px 16px; }
+  }
+</style>
+</head>
+
+<body>
+<header>
+  <div class="wrap">
+    <a class="brand" href="./" aria-label="RacePulse">
+      <svg viewBox="0 0 32 32" aria-hidden="true">
+        <rect x="1" y="1" width="30" height="30" rx="8" fill="#0D1119" stroke="#2A313C"/>
+        <path d="M5 17h5l3-8 4.5 14 3-8H27" fill="none" stroke="#38BDF8" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+        <circle cx="27" cy="15" r="1.8" fill="#FF3D57"/>
+      </svg>
+      <span>Race<b>Pulse</b></span>
+    </a>
+    <div class="lang" role="group" aria-label="Langue / Language">
+      <button type="button" data-lang="en" aria-pressed="true">EN</button>
+      <button type="button" data-lang="fr" aria-pressed="false">FR</button>
+    </div>
+  </div>
+</header>
+
+<main>
+  <div class="hero">
+    <svg class="track" viewBox="0 0 800 420" aria-hidden="true">
+      <path id="circuit" class="road" d="M170 330 C80 330 50 260 110 215 L275 105 C330 68 400 90 420 140 C438 185 490 195 545 160 L655 88 C725 44 790 100 765 170 L725 275 C700 335 635 355 575 345 Z"/>
+      <path class="line" d="M170 330 C80 330 50 260 110 215 L275 105 C330 68 400 90 420 140 C438 185 490 195 545 160 L655 88 C725 44 790 100 765 170 L725 275 C700 335 635 355 575 345 Z"/>
+      <path class="comet" pathLength="100" d="M170 330 C80 330 50 260 110 215 L275 105 C330 68 400 90 420 140 C438 185 490 195 545 160 L655 88 C725 44 790 100 765 170 L725 275 C700 335 635 355 575 345 Z"/>
+    </svg>
+
+    <div class="wrap">
+      <p class="eyebrow"><span class="dot" aria-hidden="true"></span>RacePulse Graphs</p>
+      <h1 data-i18n-html="h1"></h1>
+      <p class="lede" data-i18n="lede"></p>
+      <ul class="chips">
+        <li data-i18n="chip1"></li>
+        <li data-i18n="chip2"></li>
+        <li data-i18n="chip3"></li>
+        <li data-i18n="chip4"></li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="wrap">
+    <p class="section-title" data-i18n="dlTitle"></p>
+
+    <div class="downloads" id="downloads">
+      <!-- Windows -->
+      <article class="tile" id="tile-win">
+        <span class="tag" data-i18n="forYou" hidden></span>
+        <div class="os">
+          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M3 5.4 10.5 4.4v7H3V5.4Zm8.5-1.1L21 3v8.4h-9.5V4.3ZM3 12.6h7.5v7L3 18.6v-6Zm8.5 0H21V21l-9.5-1.3v-7.1Z"/></svg>
+          <h2>Windows</h2>
+        </div>
+        <p class="req" data-i18n="reqWin"></p>
+        <a class="btn" id="btn-win" href="https://github.com/umaneo/racepulse-updates/releases/latest" aria-disabled="false">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12m0 0-5-5m5 5 5-5M4 20h16"/></svg>
+          <span id="btn-win-label" data-i18n="dlBtnGeneric"></span>
+        </a>
+        <p class="meta" id="meta-win"></p>
+      </article>
+
+      <!-- macOS -->
+      <article class="tile soon" id="tile-mac">
+        <span class="tag" data-i18n="forYou" hidden></span>
+        <div class="os">
+          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M16.4 12.6c0-2.3 1.9-3.4 2-3.5-1.1-1.6-2.8-1.8-3.4-1.8-1.4-.15-2.8.85-3.5.85-.75 0-1.85-.83-3.05-.8-1.55.02-3 .92-3.8 2.3-1.65 2.85-.42 7.05 1.15 9.35.8 1.13 1.7 2.4 2.9 2.35 1.17-.05 1.6-.75 3-.75s1.8.75 3.05.72c1.25-.02 2.05-1.15 2.8-2.28.9-1.3 1.25-2.55 1.28-2.62-.03-.02-2.45-.93-2.45-3.78ZM14.1 5.7c.63-.78 1.07-1.85.95-2.9-.92.04-2.05.62-2.7 1.4-.58.68-1.1 1.77-.97 2.8 1.02.08 2.07-.52 2.72-1.3Z"/></svg>
+          <h2>macOS</h2>
+        </div>
+        <p class="req" data-i18n="reqMac"></p>
+        <a class="btn" id="btn-mac" href="#" hidden>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12m0 0-5-5m5 5 5-5M4 20h16"/></svg>
+          <span id="btn-mac-label" data-i18n="dlBtnGeneric"></span>
+        </a>
+        <p id="mac-soon" data-i18n="macSoon"></p>
+        <p class="meta" id="meta-mac"></p>
+      </article>
+    </div>
+    <p id="status" role="status" aria-live="polite"></p>
+  </div>
+
+  <section class="install">
+    <div class="wrap">
+      <p class="section-title" data-i18n="installTitle"></p>
+
+      <ol class="steps" id="steps-win">
+        <li>
+          <h3 data-i18n="w1h"></h3>
+          <p data-i18n-html="w1p"></p>
+        </li>
+        <li>
+          <h3 data-i18n="w2h"></h3>
+          <p data-i18n-html="w2p"></p>
+        </li>
+        <li>
+          <h3 data-i18n="w3h"></h3>
+          <p data-i18n-html="w3p"></p>
+        </li>
+      </ol>
+
+      <ol class="steps" id="steps-mac" hidden>
+        <li>
+          <h3 data-i18n="m1h"></h3>
+          <p data-i18n-html="m1p"></p>
+        </li>
+        <li>
+          <h3 data-i18n="m2h"></h3>
+          <p data-i18n-html="m2p"></p>
+        </li>
+        <li>
+          <h3 data-i18n="m3h"></h3>
+          <p data-i18n-html="m3p"></p>
+        </li>
+      </ol>
+
+      <div class="note" id="note-win">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3 2.5 20h19L12 3Z"/><path d="M12 10v5M12 18h.01"/></svg>
+        <p data-i18n-html="noteWin"></p>
+      </div>
+      <div class="note" id="note-mac" hidden>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3 2.5 20h19L12 3Z"/><path d="M12 10v5M12 18h.01"/></svg>
+        <p data-i18n-html="noteMac"></p>
+      </div>
+
+      <details id="integrity" hidden>
+        <summary data-i18n="intSummary"></summary>
+        <div class="body">
+          <p data-i18n-html="intBody"></p>
+          <div class="hash">
+            <code id="hash-value"></code>
+            <button type="button" id="hash-copy" data-i18n="copy"></button>
+          </div>
+        </div>
+      </details>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <p class="auto" data-i18n="autoUpdate"></p>
+    <p data-i18n="help"></p>
+    <p><a href="https://github.com/umaneo/racepulse-updates/releases" data-i18n="allVersions"></a></p>
+    <p>© <span id="year"></span> Umaneo</p>
+  </div>
+</footer>
+
+<script>
+(() => {
+  "use strict";
+
+  const API = "https://api.github.com/repos/umaneo/racepulse-updates/releases/latest";
+  const ASSET_PREFIX = "https://github.com/umaneo/racepulse-updates/";
+
+  /* ------------------------------------------------------------------ text */
+  const T = {
+    fr: {
+      title: "RacePulse Graphs — Télécharger",
+      h1: "Votre course, <em>lisible en un coup d’œil.</em>",
+      lede: "RacePulse Graphs réunit l’analyse des tours, la stratégie énergie et carburant, le simulateur de course et le suivi live dans une seule application de bureau.",
+      chip1: "Analyse des tours", chip2: "Stratégie", chip3: "Simulateur de course", chip4: "Live",
+      dlTitle: "Télécharger",
+      forYou: "Pour votre ordinateur",
+      reqWin: "Windows 10 ou 11 · 64 bits",
+      reqMac: "",
+      macSoon: "La version Mac est disponible sur demande. Contactez votre interlocuteur Umaneo.",
+      dlBtn: v => `Télécharger la version ${v}`,
+      dlBtnGeneric: "Télécharger la dernière version",
+      installTitle: "Installation en trois étapes",
+      w1h: "Téléchargez", w1p: "Cliquez sur le bouton ci-dessus. Le fichier <code>.zip</code> arrive dans votre dossier Téléchargements.",
+      w2h: "Extrayez", w2p: "Clic droit sur le fichier, puis « Extraire tout… » vers un dossier à vous, par exemple <code>Documents\\RacePulse</code>. Ne lancez pas l’application depuis le zip.",
+      w3h: "Lancez", w3p: "Ouvrez <code>graphs_app.exe</code> et connectez-vous avec l’identifiant fourni par Umaneo.",
+      noteWin: "<strong>Windows peut afficher « Windows a protégé votre ordinateur ».</strong> C’est normal pour une application qui n’est pas encore signée. Cliquez sur « Informations complémentaires », puis sur « Exécuter quand même ». Ce message n’apparaît qu’au premier lancement.",
+      m1h: "Téléchargez", m1p: "Cliquez sur le bouton ci-dessus, puis ouvrez le fichier téléchargé.",
+      m2h: "Installez", m2p: "Glissez RacePulse dans le dossier <code>Applications</code>.",
+      m3h: "Lancez", m3p: "Au premier lancement, faites un clic droit sur l’application, puis « Ouvrir ». Connectez-vous avec l’identifiant fourni par Umaneo.",
+      noteMac: "<strong>macOS peut refuser d’ouvrir l’application d’un double-clic.</strong> Faites un clic droit sur RacePulse, choisissez « Ouvrir », puis confirmez. Ce n’est nécessaire qu’une fois.",
+      intSummary: "Vérifier l’intégrité du fichier",
+      intBody: "Après le téléchargement, comparez cette empreinte SHA-256 avec celle de votre fichier. Sous Windows, dans PowerShell : <code>Get-FileHash .\\fichier.zip</code>.",
+      copy: "Copier", copied: "Copié",
+      autoUpdate: "Une fois installée, l’application vous propose elle-même les nouvelles versions : ce téléchargement n’est à faire qu’une fois.",
+      help: "Besoin d’aide ? Contactez votre interlocuteur Umaneo.",
+      allVersions: "Toutes les versions",
+      statusLoading: "Recherche de la dernière version…",
+      statusError: "Impossible de lire la version en cours. Le bouton vous mène à la page des versions, où vous pouvez télécharger le fichier à la main.",
+      published: d => `publiée le ${d}`,
+      sizeUnit: "Mo",
+    },
+    en: {
+      title: "RacePulse Graphs — Download",
+      h1: "Your race, <em>readable at a glance.</em>",
+      lede: "RacePulse Graphs brings lap analysis, energy and fuel strategy, the race simulator and live tracking together in one desktop app.",
+      chip1: "Lap analysis", chip2: "Strategy", chip3: "Race simulator", chip4: "Live",
+      dlTitle: "Download",
+      forYou: "For your computer",
+      reqWin: "Windows 10 or 11 · 64-bit",
+      reqMac: "",
+      macSoon: "The Mac version is available on request. Contact your Umaneo representative.",
+      dlBtn: v => `Download version ${v}`,
+      dlBtnGeneric: "Download the latest version",
+      installTitle: "Install in three steps",
+      w1h: "Download", w1p: "Click the button above. The <code>.zip</code> file lands in your Downloads folder.",
+      w2h: "Extract", w2p: "Right-click the file, then “Extract All…” into a folder of your own, for example <code>Documents\\RacePulse</code>. Do not run the app from inside the zip.",
+      w3h: "Launch", w3p: "Open <code>graphs_app.exe</code> and sign in with the login Umaneo gave you.",
+      noteWin: "<strong>Windows may show “Windows protected your PC”.</strong> This is expected for an app that is not code-signed yet. Click “More info”, then “Run anyway”. It only appears the first time you launch.",
+      m1h: "Download", m1p: "Click the button above, then open the downloaded file.",
+      m2h: "Install", m2p: "Drag RacePulse into your <code>Applications</code> folder.",
+      m3h: "Launch", m3p: "The first time, right-click the app and choose “Open”. Sign in with the login Umaneo gave you.",
+      noteMac: "<strong>macOS may refuse to open the app with a double-click.</strong> Right-click RacePulse, choose “Open”, then confirm. You only need to do this once.",
+      intSummary: "Verify the file’s integrity",
+      intBody: "After downloading, compare this SHA-256 fingerprint with your file’s. On Windows, in PowerShell: <code>Get-FileHash .\\file.zip</code>.",
+      copy: "Copy", copied: "Copied",
+      autoUpdate: "Once installed, the app offers new versions by itself, so you only need to download it once.",
+      help: "Need help? Contact your Umaneo representative.",
+      allVersions: "All versions",
+      statusLoading: "Looking up the latest version…",
+      statusError: "Could not read the current version. The button takes you to the releases page, where you can download the file by hand.",
+      published: d => `published ${d}`,
+      sizeUnit: "MB",
+    },
+  };
+
+  /* ------------------------------------------------------------------ state */
+  const $ = id => document.getElementById(id);
+  let lang = "en";
+  let release = null;           // { version, date, win, mac }
+  let failed = false;
+
+  const ua = navigator.userAgent || "";
+  const forcedOs = new URLSearchParams(location.search).get("os");
+  const detected = forcedOs === "win" || forcedOs === "mac" ? forcedOs
+    : /Mac/i.test(ua) && !/iPhone|iPad/i.test(ua) ? "mac" : /Win/i.test(ua) ? "win" : null;
+
+  function pickLang() {
+    try {
+      const q = new URLSearchParams(location.search).get("lang");
+      if (q === "fr" || q === "en") return q;
+      const s = localStorage.getItem("rp-lang");
+      if (s === "fr" || s === "en") return s;
+    } catch (_) { /* storage can be blocked */ }
+    return "en";
+  }
+
+  /* ------------------------------------------------------------------ render */
+  function render() {
+    const t = T[lang];
+    document.documentElement.lang = lang;
+    document.title = t.title;
+
+    document.querySelectorAll("[data-i18n]").forEach(el => { el.textContent = t[el.dataset.i18n]; });
+    document.querySelectorAll("[data-i18n-html]").forEach(el => { el.innerHTML = t[el.dataset.i18nHtml]; });
+    document.querySelectorAll(".lang button").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.lang === lang)));
+
+    const fmtDate = iso => new Intl.DateTimeFormat(lang === "fr" ? "fr-FR" : "en-GB", { day: "numeric", month: "long", year: "numeric" }).format(new Date(iso));
+    const fmtSize = bytes => `${(bytes / 1048576).toFixed(bytes < 10485760 ? 1 : 0).replace(".", lang === "fr" ? "," : ".")} ${t.sizeUnit}`;
+
+    // Buttons and metadata.
+    for (const os of ["win", "mac"]) {
+      const asset = release && release[os];
+      const btn = $("btn-" + os), label = $("btn-" + os + "-label"), meta = $("meta-" + os);
+      if (os === "mac") {
+        btn.hidden = !asset;
+        $("mac-soon").hidden = !!asset;
+        $("tile-mac").classList.toggle("soon", !asset);
+      }
+      if (asset) {
+        label.textContent = t.dlBtn(release.version);
+        // Spaces between the spans are invisible in the flex row but keep screen readers from reading "v1.43.024 MB".
+        meta.replaceChildren(...[`v${release.version}`, fmtSize(asset.size), t.published(fmtDate(release.date))].flatMap((s, i) => {
+          const span = document.createElement("span"); span.textContent = s;
+          return i ? [document.createTextNode(" "), span] : [span];
+        }));
+      } else if (os === "win") {
+        label.textContent = t.dlBtnGeneric;
+        meta.replaceChildren();
+      }
+    }
+
+    // Which platform is shown first / highlighted / explained.
+    const macReady = !!(release && release.mac);
+    const focus = detected === "mac" && macReady ? "mac" : "win";
+    $("steps-win").hidden = $("note-win").hidden = focus !== "win";
+    $("steps-mac").hidden = $("note-mac").hidden = focus !== "mac";
+
+    const tiles = $("downloads");
+    tiles.insertBefore($(focus === "mac" ? "tile-mac" : "tile-win"), tiles.firstChild);
+    for (const os of ["win", "mac"]) {
+      const tile = $("tile-" + os);
+      const mine = detected === os && (os === "win" || macReady);
+      tile.classList.toggle("recommended", mine);
+      tile.querySelector(".tag").hidden = !mine;
+    }
+
+    // Integrity block: hash of the asset for the platform being explained.
+    const shown = release && release[focus];
+    const hash = shown && shown.sha256;
+    $("integrity").hidden = !hash;
+    if (hash) $("hash-value").textContent = hash;
+
+    const st = $("status");
+    st.className = failed ? "warn" : "";
+    st.textContent = failed ? t.statusError : (!release ? t.statusLoading : "");
+  }
+
+  /* ------------------------------------------------------------------ data */
+  const isOurs = url => typeof url === "string" && url.startsWith(ASSET_PREFIX);
+
+  function pick(assets, re) {
+    const a = assets.find(x => re.test(x.name || "") && isOurs(x.browser_download_url));
+    if (!a) return null;
+    const d = typeof a.digest === "string" && a.digest.startsWith("sha256:") ? a.digest.slice(7) : "";
+    return { url: a.browser_download_url, size: a.size || 0, sha256: /^[0-9a-f]{64}$/i.test(d) ? d : "" };
+  }
+
+  async function load() {
+    try {
+      const r = await fetch(API, { headers: { Accept: "application/vnd.github+json" } });
+      if (!r.ok) throw new Error("HTTP " + r.status);
+      const j = await r.json();
+      const assets = Array.isArray(j.assets) ? j.assets : [];
+      const version = String(j.tag_name || "").replace(/^v/i, "");
+      if (!version) throw new Error("no tag");
+      release = {
+        version,
+        date: j.published_at || j.created_at,
+        win: pick(assets, /windows/i),
+        mac: pick(assets, /(macos|\bmac\b|\.dmg$)/i),
+      };
+      if (!release.win && !release.mac) throw new Error("no asset");
+      if (release.win) $("btn-win").href = release.win.url;
+      if (release.mac) $("btn-mac").href = release.mac.url;
+    } catch (e) {
+      failed = true;   // the buttons keep their static fallback link
+    }
+    render();
+  }
+
+  /* ------------------------------------------------------------------ wiring */
+  document.querySelectorAll(".lang button").forEach(b => b.addEventListener("click", () => {
+    lang = b.dataset.lang;
+    try { localStorage.setItem("rp-lang", lang); } catch (_) {}
+    render();
+  }));
+
+  $("hash-copy").addEventListener("click", async () => {
+    const btn = $("hash-copy");
+    try { await navigator.clipboard.writeText($("hash-value").textContent); } catch (_) { return; }
+    btn.textContent = T[lang].copied;
+    setTimeout(() => { btn.textContent = T[lang].copy; }, 1600);
+  });
+
+  $("year").textContent = new Date().getFullYear();
+  lang = pickLang();
+  render();
+  load();
+})();
+</script>
+</body>
+</html>
